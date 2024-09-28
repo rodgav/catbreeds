@@ -1,0 +1,35 @@
+{
+    "name": "thecat_rodgav",
+    "short_name": "thecat_rodgav",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "De acuerdo a la necesidad de la vacante, se requiere desarrollar una app en el sistema operativo solicitado (iOS, Android o Ambos) en la herramienta requerida (Android Studio, XCode, Visual Studio, Visual Code, Idea JetBrains) con el framework necesario (Nativo, Flutter, Reactive Native, Ionic, otros), y se debe crear con las características nombradas en el siguiente ítem.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
