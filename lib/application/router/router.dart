@@ -31,7 +31,7 @@ class Router {
               initCats();
               return BlocProvider<CatsBloc>(
                   create: (context) => getIt<CatsBloc>(),
-                  child: const CatsView());
+                  child: CatsView());
             },
             routes: [
               GoRoute(

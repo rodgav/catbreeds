@@ -81,6 +81,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/animations/cat.riv
+    - assets/images/
   fonts:
     - family: Lato
       fonts:
@@ -133,5 +134,5 @@ flutter_intl:
   class_name: S
   main_locale: es
   arb_dir: lib/application/internationalization/l10n
-  output_dir: lib/application/ internationalization/generated
+  output_dir: lib/application/internationalization/generated
   use_deferred_loading: false

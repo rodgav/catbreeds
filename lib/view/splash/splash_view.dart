@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';
+import 'package:thecat_rodgav/application/constants/assets_constant.dart';
+import 'package:thecat_rodgav/application/constants/doubles_constant.dart';
+import 'package:thecat_rodgav/application/constants/string_constant.dart';
 import 'package:thecat_rodgav/application/router/navigator.dart';
+import 'package:thecat_rodgav/application/utils/extensions/string_extension.dart';
 import 'package:thecat_rodgav/view/custom_widgets/responsive.dart';
+import 'package:thecat_rodgav/view/splash/splash_cubit/splash_cubit.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -10,61 +16,41 @@ class SplashView extends StatefulWidget {
   State<SplashView> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
-  late AnimationController _controller;
-
-  late Animation<AlignmentGeometry> _animation;
-
+class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
-    _controller = AnimationController(
-      duration: const Duration(seconds: 4),
-      vsync: this,
-    )..forward();
-    _animation = Tween<AlignmentGeometry>(
-      begin: Alignment.topCenter,
-      end: Alignment.center,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.decelerate,
-      ),
-    );
-
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        context.goCats();
-      }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<SplashCubit>().callFirstService();
     });
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return CatResponsive(
       widget: Scaffold(
-        body: SafeArea(
-          child: Stack(
+        body: BlocListener<SplashCubit, SplashState>(
+          listener: (context, state) {
+            if (state is SplashSuccess) {
+              context.goCats();
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const RiveAnimation.asset(
-                'assets/animations/cat.riv',
-                //controllers: [_controller],
-                animations: ['Idle'],
+              Text(
+                TheCatStrings.title.capitalize(),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              AlignTransition(
-                alignment: _animation,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'CATBREEDS',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+              const SizedBox(height: TheCatsDoubles.d20),
+              const SizedBox(
+                height: TheCatsDoubles.d200,
+                width: double.infinity,
+                child: RiveAnimation.asset(
+                  TheCatAssets.cat,
+                  animations: [TheCatAssets.catAnimation],
                 ),
               ),
             ],
