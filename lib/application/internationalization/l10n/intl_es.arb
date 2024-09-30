@@ -1,4 +1,6 @@
 {
   "@@locale": "es",
-  "searchCatBreed": "buscar gatos por raza"
+  "searchCatBreed": "buscar gatos por raza",
+  "noData": "no hay información",
+  "more": "más..."
 }

@@ -30,20 +30,18 @@ class Router {
             builder: (context, state) {
               initCats();
               return BlocProvider<CatsBloc>(
-                  create: (context) => getIt<CatsBloc>(),
-                  child: CatsView());
+                  create: (context) => getIt<CatsBloc>(), child: CatsView());
             },
             routes: [
               GoRoute(
                 path: '${Routes.catDetail}/:idCat',
                 name: Routes.catDetail,
                 builder: (context, state) {
-                  //state.pathParameters['idCat']
-                  //state.extra;
                   initCatDetail();
                   return BlocProvider<CatDetailBloc>(
                       create: (context) => getIt<CatDetailBloc>(),
-                      child: const CatDetailView());
+                      child: CatDetailView(
+                          state.pathParameters['idCat'], state.extra));
                 },
               )
             ]),

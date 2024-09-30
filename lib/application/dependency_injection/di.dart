@@ -7,11 +7,15 @@ import 'package:thecat_rodgav/application/service/app_service.dart';
 import 'package:thecat_rodgav/application/utils/application_bloc/application_bloc.dart';
 import 'package:thecat_rodgav/data/datasource/local_datasource.dart';
 import 'package:thecat_rodgav/data/datasource/local_datasource_impl.dart';
+import 'package:thecat_rodgav/data/datasource/remote_datasource.dart';
+import 'package:thecat_rodgav/data/datasource/remote_datasource_impl.dart';
 import 'package:thecat_rodgav/data/local/hive.dart';
 import 'package:thecat_rodgav/data/network/dio_client.dart';
 import 'package:thecat_rodgav/data/repository/repository_impl.dart';
 import 'package:thecat_rodgav/data/response/app_preferences_response.dart';
+import 'package:thecat_rodgav/data/service/retrofit_service.dart';
 import 'package:thecat_rodgav/domain/repository/repository.dart';
+import 'package:thecat_rodgav/domain/usecases/get_breeds_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/get_locale_app_preferences_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/save_app_preferences_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/stream_locale_app_preferences_usecase.dart';
@@ -25,11 +29,17 @@ Future<void> initAppModule() async {
   getIt.registerLazySingleton<S>(() => S());
   final dio = await getDio();
   getIt.registerLazySingleton<Dio>(() => dio);
+  getIt.registerLazySingleton<RetrofitService>(
+      () => RetrofitService(getIt<Dio>()));
+  getIt.registerLazySingleton<RemoteDataSource>(
+      () => RemoteDataSourceImpl(getIt<RetrofitService>()));
 
   await _initCoreBoxes();
 
-  getIt.registerLazySingleton<Repository>(
-      () => RepositoryImpl(getIt<LocalDataSource>()));
+  getIt.registerLazySingleton<Repository>(() =>
+      RepositoryImpl(getIt<LocalDataSource>(), getIt<RemoteDataSource>()));
+  getIt.registerLazySingleton<GetBreedsUseCase>(
+      () => GetBreedsUseCase(getIt<Repository>()));
 
   getIt.registerLazySingleton<SaveAppPreferencesUseCase>(
       () => SaveAppPreferencesUseCase(getIt<Repository>()));
@@ -52,7 +62,8 @@ void initSplash() {
 
 void initCats() {
   if (!GetIt.I.isRegistered<CatsBloc>()) {
-    getIt.registerLazySingleton<CatsBloc>(() => CatsBloc());
+    getIt.registerLazySingleton<CatsBloc>(
+        () => CatsBloc(getIt<GetBreedsUseCase>()));
   }
 }
 

@@ -8,13 +8,29 @@ import 'package:thecat_rodgav/application/internationalization/generated/l10n.da
 import 'package:thecat_rodgav/application/router/navigator.dart';
 import 'package:thecat_rodgav/application/utils/application_bloc/application_bloc.dart';
 import 'package:thecat_rodgav/application/utils/extensions/string_extension.dart';
+import 'package:thecat_rodgav/data/network/dio_client.dart';
+import 'package:thecat_rodgav/view/cats/cats_bloc/cats_bloc.dart';
 import 'package:thecat_rodgav/view/custom_widgets/responsive.dart';
 import 'package:thecat_rodgav/view/model/app_preferences.dart';
+import 'package:thecat_rodgav/view/model/breed.dart';
 
-class CatsView extends StatelessWidget {
+class CatsView extends StatefulWidget {
   CatsView({super.key});
 
+  @override
+  State<CatsView> createState() => _CatsViewState();
+}
+
+class _CatsViewState extends State<CatsView> {
   final s = getIt<S>();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<CatsBloc>().add(OnGetBreeds());
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +40,9 @@ class CatsView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
             horizontal: TheCatsDoubles.d8, vertical: TheCatsDoubles.d10),
         child: BlocBuilder<ApplicationBloc, ApplicationState>(
-          builder: (context, state) {
-            final appPreferences = (state as ApplicationInitial).appPreferences;
+          builder: (appContext, appState) {
+            final appPreferences =
+                (appState as ApplicationInitial).appPreferences;
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
@@ -66,56 +83,102 @@ class CatsView extends StatelessWidget {
                     height: TheCatsDoubles.d20,
                   ),
                 ),
-                SliverList.builder(
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: TheCatsDoubles.d8),
-                      child: Card(
-                        child: Container(
-                          padding: const EdgeInsets.all(TheCatsDoubles.d8),
-                          width: double.infinity,
-                          height: TheCatsDoubles.d350,
+                BlocBuilder<CatsBloc, CatsState>(
+                  builder: (context, state) {
+                    switch (state) {
+                      case CatsInitial _:
+                        return const SliverToBoxAdapter(
+                            child: Center(
+                          child: CircularProgressIndicator(),
+                        ));
+                      case CatsError _:
+                        return SliverToBoxAdapter(
+                            child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: TheCatsDoubles.d20),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Text('Nombre Raza'),
-                                  GestureDetector(
-                                      onTap: () {
-                                        context.pushCatDetail('cat',null);
-                                      },
-                                      child: Text('Más...'))
-                                ],
+                              Text(
+                                state.title,
+                                style: Theme.of(context).textTheme.titleSmall,
                               ),
-                              const SizedBox(height: TheCatsDoubles.d8),
-                              Expanded(child: Image.asset(TheCatImages.cats)),
-                              const SizedBox(height: TheCatsDoubles.d8),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Text('País de origen'),
-                                  Text('Inteligencia'),
-                                ],
+                              Text(
+                                state.title,
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    );
+                        ));
+                      case CatsSuccess _:
+                        final breeds = state.breeds;
+                        return SliverList.builder(
+                          itemBuilder: (context, index) {
+                            return BreedWidget(s, breeds[index]);
+                          },
+                          itemCount: breeds.length,
+                        );
+                    }
                   },
-                  itemCount: 10,
-                )
+                ),
               ],
             );
           },
         ),
       ),
     ));
+  }
+}
+
+class BreedWidget extends StatelessWidget {
+  final S _s;
+  final Breed _breed;
+
+  const BreedWidget(this._s, this._breed, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: TheCatsDoubles.d8),
+      child: Card(
+        child: Container(
+          padding: const EdgeInsets.all(TheCatsDoubles.d8),
+          width: double.infinity,
+          height: TheCatsDoubles.d350,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(_breed.name),
+                  GestureDetector(
+                      onTap: () {
+                        context.pushCatDetail(_breed.id, _breed);
+                      },
+                      child: Text(_s.more.capitalize()))
+                ],
+              ),
+              const SizedBox(height: TheCatsDoubles.d8),
+              Expanded(
+                  child: _breed.image.url.isNotEmpty
+                      ? Image.network(
+                          headers: const {xApiKey: xApiKeyValue},
+                          _breed.image.url)
+                      : Image.asset(TheCatImages.cats)),
+              const SizedBox(height: TheCatsDoubles.d8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(_breed.origin),
+                  Text(_breed.intelligence.toString()),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

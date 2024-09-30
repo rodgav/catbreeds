@@ -59,6 +59,26 @@ class S {
       args: [],
     );
   }
+
+  /// `no hay información`
+  String get noData {
+    return Intl.message(
+      'no hay información',
+      name: 'noData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `más...`
+  String get more {
+    return Intl.message(
+      'más...',
+      name: 'more',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

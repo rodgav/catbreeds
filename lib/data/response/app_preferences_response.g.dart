@@ -9,7 +9,7 @@ part of 'app_preferences_response.dart';
 class AppPreferencesResponseAdapter
     extends TypeAdapter<AppPreferencesResponse> {
   @override
-  final int typeId = 1;
+  final int typeId = 0;
 
   @override
   AppPreferencesResponse read(BinaryReader reader) {
@@ -48,7 +48,7 @@ class AppPreferencesResponseAdapter
 
 class AppLocaleResponseAdapter extends TypeAdapter<AppLocaleResponse> {
   @override
-  final int typeId = 2;
+  final int typeId = 1;
 
   @override
   AppLocaleResponse read(BinaryReader reader) {

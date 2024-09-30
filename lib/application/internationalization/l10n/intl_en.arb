@@ -1,4 +1,6 @@
 {
   "@@locale": "en",
-  "searchCatBreed": "search cats by breed"
+  "searchCatBreed": "search cats by breed",
+  "noData": "no data",
+  "more": "more..."
 }
