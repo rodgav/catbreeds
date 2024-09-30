@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:thecat_rodgav/application/constants/doubles_constant.dart';
 import 'package:thecat_rodgav/application/constants/image_constant.dart';
 import 'package:thecat_rodgav/application/router/navigator.dart';
-import 'package:thecat_rodgav/application/router/router.dart';
 import 'package:thecat_rodgav/data/network/dio_client.dart';
 import 'package:thecat_rodgav/view/cat_detail/cat_detail_bloc/cat_detail_bloc.dart';
 import 'package:thecat_rodgav/view/custom_widgets/responsive.dart';
