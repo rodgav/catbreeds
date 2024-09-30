@@ -38,11 +38,9 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
         _streamLocaleAppPreferencesUseCase.execute(null);
     appPreferencesModel.map((data) {
       data.when(left: (value) {
-        print('left $value');
         emit(ApplicationInitial(
             AppPreferences(appLocale: AppLocale.es, darkMode: true)));
       }, right: (value) {
-        print('right $value');
         emit(ApplicationInitial(value.domainToView()));
       });
     });
@@ -60,12 +58,7 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
                 AppPreferences(appLocale: AppLocale.es, darkMode: true))),
             right: (right) async {
               emit(ApplicationInitial(event.appPreferences));
-              try {
                 await S.load(Locale(event.appPreferences.appLocale.getName()));
-              } catch (e) {
-                print(
-                    'load locale ${event.appPreferences.appLocale.getName()}');
-              }
             });
   }
 }
