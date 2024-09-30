@@ -38,11 +38,12 @@ class Router {
               path: '${Routes.catDetail}/:idCat',
               name: Routes.catDetail,
               builder: (context, state) {
+                final idCat = state.pathParameters['idCat'];
+                final breed = state.extra as Breed?;
                 initCatDetail();
                 return BlocProvider<CatDetailBloc>(
                     create: (context) => getIt<CatDetailBloc>(),
-                    child: CatDetailView(
-                        state.pathParameters['idCat'], state.extra as Breed?));
+                    child: CatDetailView(idCat, breed));
               },
             )
           ]),
