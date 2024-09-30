@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:thecat_rodgav/application/constants/doubles_constant.dart';
@@ -57,9 +55,7 @@ class _CatDetailViewState extends State<CatDetailView> {
                       onPressed: () {
                         context.popNavigate();
                       },
-                      icon: Icon(Platform.isAndroid
-                          ? Icons.arrow_back
-                          : Icons.arrow_back_ios_new)),
+                      icon: const Icon(Icons.arrow_back)),
                   title: Text(breed.name),
                 ),
                 body: Padding(
