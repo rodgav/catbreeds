@@ -5,6 +5,8 @@ sealed class CatsState {}
 
 final class CatsInitial extends CatsState {}
 
+final class CatsLoading extends CatsState {}
+
 final class CatsSuccess extends CatsState {
   final List<Breed> breeds;
 

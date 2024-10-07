@@ -4,4 +4,5 @@ class TheCatsInts {
   static const int i2 = 2;
   static const int i3 = 3;
   static const int i4 = 4;
+  static const int i10 = 10;
 }

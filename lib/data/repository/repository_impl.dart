@@ -57,9 +57,9 @@ class RepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<BreedModel>>> getBreeds() async {
+  Future<Either<Failure, List<BreedModel>>> getBreeds(int page) async {
     try {
-      final breedsResponse = await _remoteDataSource.getBreeds();
+      final breedsResponse = await _remoteDataSource.getBreeds(page);
       final breeds = breedsResponse.map((e) => e.dataToDomain()).toList();
       return Either.right(breeds);
     } catch (e) {

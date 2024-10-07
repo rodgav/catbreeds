@@ -22,9 +22,10 @@ class _RetrofitService implements RetrofitService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<List<BreedResponse>> getBreeds() async {
+  Future<List<BreedResponse>> getBreeds(Map<String, dynamic> queries) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<List<BreedResponse>>(Options(
@@ -34,7 +35,7 @@ class _RetrofitService implements RetrofitService {
     )
         .compose(
           _dio.options,
-          '/v1/breeds?limit=10&page=0',
+          '/v1/breeds',
           queryParameters: queryParameters,
           data: _data,
         )

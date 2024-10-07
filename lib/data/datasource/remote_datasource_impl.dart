@@ -8,5 +8,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   RemoteDataSourceImpl(this._retrofitService);
 
   @override
-  Future<List<BreedResponse>> getBreeds() => _retrofitService.getBreeds();
+  Future<List<BreedResponse>> getBreeds(int page) async {
+    Map<String, dynamic> queries = {'limit': '10', 'page': page.toString()};
+    return _retrofitService.getBreeds(queries);
+  }
 }

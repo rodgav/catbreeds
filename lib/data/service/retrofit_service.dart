@@ -8,6 +8,7 @@ part 'retrofit_service.g.dart';
 abstract class RetrofitService {
   factory RetrofitService(Dio dio, {String? baseUrl}) = _RetrofitService;
 
-  @GET('/v1/breeds?limit=10&page=0')
-  Future<List<BreedResponse>> getBreeds();
+  @GET('/v1/breeds')
+  Future<List<BreedResponse>> getBreeds(
+      @Queries() Map<String, dynamic> queries);
 }

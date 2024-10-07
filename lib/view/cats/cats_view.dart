@@ -1,18 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:thecat_rodgav/application/constants/doubles_constant.dart';
-import 'package:thecat_rodgav/application/constants/image_constant.dart';
+import 'package:thecat_rodgav/application/constants/int_constant.dart';
 import 'package:thecat_rodgav/application/constants/string_constant.dart';
 import 'package:thecat_rodgav/application/dependency_injection/di.dart';
 import 'package:thecat_rodgav/application/internationalization/generated/l10n.dart';
-import 'package:thecat_rodgav/application/router/navigator.dart';
 import 'package:thecat_rodgav/application/utils/application_bloc/application_bloc.dart';
 import 'package:thecat_rodgav/application/utils/extensions/string_extension.dart';
-import 'package:thecat_rodgav/data/network/dio_client.dart';
+import 'package:thecat_rodgav/application/utils/pagination_scroll_controller.dart';
 import 'package:thecat_rodgav/view/cats/cats_bloc/cats_bloc.dart';
 import 'package:thecat_rodgav/view/custom_widgets/responsive.dart';
 import 'package:thecat_rodgav/view/model/app_preferences.dart';
-import 'package:thecat_rodgav/view/model/breed.dart';
+import 'package:thecat_rodgav/view/widgets/breed_skeleton_widget.dart';
+import 'package:thecat_rodgav/view/widgets/breed_widget.dart';
 
 class CatsView extends StatefulWidget {
   CatsView({super.key});
@@ -22,14 +23,26 @@ class CatsView extends StatefulWidget {
 }
 
 class _CatsViewState extends State<CatsView> {
+  late PaginationScrollController _paginationScrollController;
   final s = getIt<S>();
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<CatsBloc>().add(OnGetBreeds());
+    _paginationScrollController = PaginationScrollController(loadData: (page) {
+      context.read<CatsBloc>().add(OnGetBreeds(page: page));
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<CatsBloc>()
+          .add(OnGetBreeds(isLoad: true, page: TheCatsInts.i0));
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _paginationScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -44,6 +57,8 @@ class _CatsViewState extends State<CatsView> {
             final appPreferences =
                 (appState as ApplicationInitial).appPreferences;
             return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              controller: _paginationScrollController.scrollController,
               slivers: [
                 SliverAppBar(
                   title: Text(TheCatStrings.title.capitalize()),
@@ -78,6 +93,20 @@ class _CatsViewState extends State<CatsView> {
                     const SizedBox(width: TheCatsDoubles.d20),
                   ],
                 ),
+                CupertinoSliverRefreshControl(
+                  onRefresh: () async {
+                    context.read<CatsBloc>().add(
+                        OnGetBreeds(isRefresh: true, page: TheCatsInts.i0));
+                    await context.read<CatsBloc>().stream.first;
+                  },
+                  builder: (_, __, ___, ____, _____) {
+                    return const Center(
+                        child: SizedBox(
+                            width: TheCatsDoubles.d20,
+                            height: TheCatsDoubles.d20,
+                            child: CircularProgressIndicator()));
+                  }
+                ),
                 const SliverToBoxAdapter(
                   child: SizedBox(
                     height: TheCatsDoubles.d20,
@@ -86,11 +115,13 @@ class _CatsViewState extends State<CatsView> {
                 BlocBuilder<CatsBloc, CatsState>(
                   builder: (context, state) {
                     switch (state) {
-                      case CatsInitial _:
-                        return const SliverToBoxAdapter(
-                            child: Center(
-                          child: CircularProgressIndicator(),
-                        ));
+                      case CatsLoading _:
+                        return SliverList.builder(
+                          itemBuilder: (context, index) {
+                            return const BreedSkeletonWidget();
+                          },
+                          itemCount: TheCatsInts.i10,
+                        );
                       case CatsError _:
                         return SliverToBoxAdapter(
                             child: Padding(
@@ -117,6 +148,8 @@ class _CatsViewState extends State<CatsView> {
                           },
                           itemCount: breeds.length,
                         );
+                      case CatsInitial():
+                        return const SliverToBoxAdapter();
                     }
                   },
                 ),
@@ -126,59 +159,5 @@ class _CatsViewState extends State<CatsView> {
         ),
       ),
     ));
-  }
-}
-
-class BreedWidget extends StatelessWidget {
-  final S _s;
-  final Breed _breed;
-
-  const BreedWidget(this._s, this._breed, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: TheCatsDoubles.d8),
-      child: Card(
-        child: Container(
-          padding: const EdgeInsets.all(TheCatsDoubles.d8),
-          width: double.infinity,
-          height: TheCatsDoubles.d350,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(_breed.name),
-                  GestureDetector(
-                      onTap: () {
-                        context.pushCatDetail(_breed.id, _breed);
-                      },
-                      child: Text(_s.more.capitalize()))
-                ],
-              ),
-              const SizedBox(height: TheCatsDoubles.d8),
-              Expanded(
-                  child: _breed.image.url.isNotEmpty
-                      ? Image.network(
-                          headers: const {xApiKey: xApiKeyValue},
-                          _breed.image.url)
-                      : Image.asset(TheCatImages.cats)),
-              const SizedBox(height: TheCatsDoubles.d8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(_breed.origin),
-                  Text(_breed.intelligence.toString()),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

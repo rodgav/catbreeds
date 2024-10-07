@@ -14,5 +14,5 @@ abstract class Repository {
   Future<Either<Failure, AppPreferencesModel>> saveAppPreferences(
       AppPreferencesResponse appPreferencesResponse);
 
-  Future<Either<Failure, List<BreedModel>>> getBreeds();
+  Future<Either<Failure, List<BreedModel>>> getBreeds(int page);
 }
