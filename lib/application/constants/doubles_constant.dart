@@ -6,6 +6,9 @@ class TheCatsDoubles {
   static const double d8 = 8;
   static const double d10= 10;
   static const double d20 = 20;
+  static const double d100 = 100;
+  static const double d120 = 120;
+  static const double d150 = 150;
   static const double d200 = 200;
   static const double d300 = 300;
   static const double d350 = 350;

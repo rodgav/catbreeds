@@ -15,12 +15,14 @@ import 'package:thecat_rodgav/data/repository/repository_impl.dart';
 import 'package:thecat_rodgav/data/response/app_preferences_response.dart';
 import 'package:thecat_rodgav/data/service/retrofit_service.dart';
 import 'package:thecat_rodgav/domain/repository/repository.dart';
+import 'package:thecat_rodgav/domain/usecases/get_breed_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/get_breeds_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/get_locale_app_preferences_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/save_app_preferences_usecase.dart';
 import 'package:thecat_rodgav/domain/usecases/stream_locale_app_preferences_usecase.dart';
 import 'package:thecat_rodgav/view/cat_detail/cat_detail_bloc/cat_detail_bloc.dart';
 import 'package:thecat_rodgav/view/cats/cats_bloc/cats_bloc.dart';
+import 'package:thecat_rodgav/view/cats/cats_search/cats_search_bloc/cats_search_bloc.dart';
 import 'package:thecat_rodgav/view/splash/splash_cubit/splash_cubit.dart';
 
 final getIt = GetIt.instance;
@@ -38,8 +40,6 @@ Future<void> initAppModule() async {
 
   getIt.registerLazySingleton<Repository>(() =>
       RepositoryImpl(getIt<LocalDataSource>(), getIt<RemoteDataSource>()));
-  getIt.registerLazySingleton<GetBreedsUseCase>(
-      () => GetBreedsUseCase(getIt<Repository>()));
 
   getIt.registerLazySingleton<SaveAppPreferencesUseCase>(
       () => SaveAppPreferencesUseCase(getIt<Repository>()));
@@ -61,9 +61,16 @@ void initSplash() {
 }
 
 void initCats() {
-  if (!GetIt.I.isRegistered<CatsBloc>()) {
+  if (!GetIt.I.isRegistered<GetBreedsUseCase>()) {
+    getIt.registerLazySingleton<GetBreedsUseCase>(
+        () => GetBreedsUseCase(getIt<Repository>()));
     getIt.registerLazySingleton<CatsBloc>(
         () => CatsBloc(getIt<GetBreedsUseCase>()));
+
+    getIt.registerLazySingleton<GetBreedUseCase>(
+        () => GetBreedUseCase(getIt<Repository>()));
+    getIt.registerLazySingleton<CatsSearchBloc>(
+        () => CatsSearchBloc(getIt<GetBreedUseCase>()));
   }
 }
 

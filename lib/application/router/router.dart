@@ -5,6 +5,7 @@ import 'package:thecat_rodgav/application/router/routes.dart';
 import 'package:thecat_rodgav/view/cat_detail/cat_detail_bloc/cat_detail_bloc.dart';
 import 'package:thecat_rodgav/view/cat_detail/cat_detail_view.dart';
 import 'package:thecat_rodgav/view/cats/cats_bloc/cats_bloc.dart';
+import 'package:thecat_rodgav/view/cats/cats_search/cats_search_bloc/cats_search_bloc.dart';
 import 'package:thecat_rodgav/view/cats/cats_view.dart';
 import 'package:thecat_rodgav/view/model/breed.dart';
 import 'package:thecat_rodgav/view/splash/splash_cubit/splash_cubit.dart';
@@ -30,8 +31,11 @@ class Router {
           name: Routes.cats,
           builder: (context, state) {
             initCats();
-            return BlocProvider<CatsBloc>(
-                create: (context) => getIt<CatsBloc>(), child: CatsView());
+            return MultiBlocProvider(providers: [
+              BlocProvider<CatsBloc>(create: (context) => getIt<CatsBloc>()),
+              BlocProvider<CatsSearchBloc>(
+                  create: (context) => getIt<CatsSearchBloc>())
+            ], child: CatsView());
           },
           routes: [
             GoRoute(

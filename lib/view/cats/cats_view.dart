@@ -10,8 +10,11 @@ import 'package:thecat_rodgav/application/utils/application_bloc/application_blo
 import 'package:thecat_rodgav/application/utils/extensions/string_extension.dart';
 import 'package:thecat_rodgav/application/utils/pagination_scroll_controller.dart';
 import 'package:thecat_rodgav/view/cats/cats_bloc/cats_bloc.dart';
+import 'package:thecat_rodgav/view/cats/cats_search/cats_search.dart';
+import 'package:thecat_rodgav/view/cats/cats_search/cats_search_bloc/cats_search_bloc.dart';
 import 'package:thecat_rodgav/view/custom_widgets/responsive.dart';
 import 'package:thecat_rodgav/view/model/app_preferences.dart';
+import 'package:thecat_rodgav/view/model/breed.dart';
 import 'package:thecat_rodgav/view/widgets/breed_skeleton_widget.dart';
 import 'package:thecat_rodgav/view/widgets/breed_widget.dart';
 
@@ -64,10 +67,24 @@ class _CatsViewState extends State<CatsView> {
                   title: Text(TheCatStrings.title.capitalize()),
                   bottom: PreferredSize(
                       preferredSize: const Size(double.infinity, 50),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                            hintText: s.searchCatBreed.capitalize(),
-                            border: const OutlineInputBorder()),
+                      child: BlocBuilder<CatsBloc, CatsState>(
+                        builder: (_, state) {
+                          return GestureDetector(
+                            child: TextFormField(
+                              enabled: false,
+                              decoration: InputDecoration(
+                                  hintText: s.searchCatBreed.capitalize(),
+                                  border: const OutlineInputBorder()),
+                            ),
+                            onTap: () => showSearch(
+                                context: context,
+                                delegate: CatsSearch(
+                                    catsSearchBloc: context.read<CatsSearchBloc>(),
+                                    breeds: (state is CatsSuccess)
+                                        ? state.breeds
+                                        : List<Breed>.empty())),
+                          );
+                        },
                       )),
                   actions: [
                     GestureDetector(
@@ -93,20 +110,18 @@ class _CatsViewState extends State<CatsView> {
                     const SizedBox(width: TheCatsDoubles.d20),
                   ],
                 ),
-                CupertinoSliverRefreshControl(
-                  onRefresh: () async {
-                    context.read<CatsBloc>().add(
-                        OnGetBreeds(isRefresh: true, page: TheCatsInts.i0));
-                    await context.read<CatsBloc>().stream.first;
-                  },
-                  builder: (_, __, ___, ____, _____) {
-                    return const Center(
-                        child: SizedBox(
-                            width: TheCatsDoubles.d20,
-                            height: TheCatsDoubles.d20,
-                            child: CircularProgressIndicator()));
-                  }
-                ),
+                CupertinoSliverRefreshControl(onRefresh: () async {
+                  context
+                      .read<CatsBloc>()
+                      .add(OnGetBreeds(isRefresh: true, page: TheCatsInts.i0));
+                  await context.read<CatsBloc>().stream.first;
+                }, builder: (_, __, ___, ____, _____) {
+                  return const Center(
+                      child: SizedBox(
+                          width: TheCatsDoubles.d20,
+                          height: TheCatsDoubles.d20,
+                          child: CircularProgressIndicator()));
+                }),
                 const SliverToBoxAdapter(
                   child: SizedBox(
                     height: TheCatsDoubles.d20,

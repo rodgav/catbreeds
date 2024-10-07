@@ -12,4 +12,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     Map<String, dynamic> queries = {'limit': '10', 'page': page.toString()};
     return _retrofitService.getBreeds(queries);
   }
+
+  @override
+  Future<BreedResponse> getBreed(String breedId) =>
+      _retrofitService.getBreed(breedId);
 }

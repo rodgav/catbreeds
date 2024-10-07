@@ -15,4 +15,6 @@ abstract class Repository {
       AppPreferencesResponse appPreferencesResponse);
 
   Future<Either<Failure, List<BreedModel>>> getBreeds(int page);
+
+  Future<Either<Failure, BreedModel>> getBreed(String breedId);
 }

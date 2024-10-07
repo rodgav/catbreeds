@@ -66,4 +66,15 @@ class RepositoryImpl implements Repository {
       return Either.left(Failure('Call Service error', 'Call Service error'));
     }
   }
+
+  @override
+  Future<Either<Failure, BreedModel>> getBreed(String breedId) async {
+    try {
+      final breedsResponse = await _remoteDataSource.getBreed(breedId);
+      final breed = breedsResponse.dataToDomain();
+      return Either.right(breed);
+    } catch (e) {
+      return Either.left(Failure('Call Service error', 'Call Service error'));
+    }
+  }
 }

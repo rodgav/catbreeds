@@ -11,4 +11,7 @@ abstract class RetrofitService {
   @GET('/v1/breeds')
   Future<List<BreedResponse>> getBreeds(
       @Queries() Map<String, dynamic> queries);
+
+  @GET('/v1/breeds/{breed_id}')
+  Future<BreedResponse> getBreed(@Path('breed_id') String id);
 }
