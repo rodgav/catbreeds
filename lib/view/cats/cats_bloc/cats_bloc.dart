@@ -23,7 +23,7 @@ class CatsBloc extends Bloc<CatsEvent, CatsState> {
   FutureOr<void> _onGetBreeds(
       OnGetBreeds event, Emitter<CatsState> emit) async {
     print('call _onGetBreeds ${event.isRefresh}');
-    if (!event.isRefresh || event.isLoad) {
+    if (!event.isRefresh && !event.isLoad) {
       emit(CatsLoading());
     }
     (await _getBreedsUseCase.execute(event.page)).when(left: (left) {
